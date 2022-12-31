@@ -8,6 +8,7 @@ Constructor is declared with contract name which is old version. Through this it
 
 ## Attack steps
 1. As a attacker call the `Fallout` function (constructor) to become the owner of contract. 
+2. Get all the balance of contract through `collectAllocations` function.
 
 ## Exploit Code
 There is not much exploit code required for this challenge. We simple execute the `Fallout` function to get the ownership.
