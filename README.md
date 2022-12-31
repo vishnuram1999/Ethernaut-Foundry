@@ -1,2 +1,2 @@
 # Ethernaut-Foundry
-Solution od Ethernaut challenges using Foundry
+Solution of Ethernaut challenges using Foundry
