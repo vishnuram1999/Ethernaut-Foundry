@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 import "@forge-std/Script.sol";
 import {Delegation, Delegate} from "../src/Delegation.sol";
-contract FallbackScript is Script {
+contract DelegationScript is Script {
     Delegation public delegationContract;
     Delegate public delegateContract;
 
