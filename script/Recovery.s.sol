@@ -7,8 +7,6 @@ import "@forge-std/Script.sol";
 contract RecoveryScript is Script {
     Recovery public recoveryContract;
     SimpleToken public simpletokenCreated; // from etherscan
-    address public attacker;
-    address public creator;
 
     function setUp() public {
         recoveryContract = Recovery(payable(vm.envAddress("RECOVERY_CONTRACT")));
