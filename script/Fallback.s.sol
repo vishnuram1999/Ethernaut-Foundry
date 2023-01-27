@@ -6,7 +6,7 @@ contract FallbackScript is Script {
     Fallback public fallbackContract;
 
     function setUp() public {
-        fallbackContract = Fallback(payable(vm.envAddress("FALLBACK_ADDRESS")));    
+        fallbackContract = Fallback(payable(vm.envAddress("FALLBACK_CONTRACT")));    
     }
     function run() public {
         vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
